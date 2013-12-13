@@ -1,53 +1,60 @@
 package com.example.testviewer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 public class MainActivity extends FragmentActivity implements LoaderCallbacks<ArrayList<RSSContainer>> {
 
 	//AsyncHttpRequest task = new AsyncHttpRequest(this);
 
 	ArrayList<String> imageList;
-	TextView text;
 	MainActivity mainActivity;
+	ListView listView;
+	RSSAdaputer rssAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
 		imageList = new ArrayList<String>();
-		Button button_start = (Button) findViewById(R.id.button1);
-		Button button_show = (Button) findViewById(R.id.button2);
-
-		text = (TextView)findViewById(R.id.text_main);
-		mainActivity = this;
 
 
-
-		button_start.setOnClickListener(new OnClickListener() {
+		listView = (ListView)findViewById(R.id.listView1);
+		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onClick(View v) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
 				// TODO 自動生成されたメソッド・スタブ
-
-				Bundle bundle = new Bundle(1);
-				//initLoaderだと、最初の一回しか起動しない？
-				getSupportLoaderManager().restartLoader(0,null,mainActivity);
-
-				//task.execute();
+				String url = null;
+				if(rssAdapter!=null){
+					url = rssAdapter.getURL(arg2);
+				}
+				if(url!=null){
+					Intent nextIntent = new Intent(MainActivity.this,ImageViewActivity.class);
+					nextIntent.putExtra("url",url);
+					startActivity(nextIntent);
+				}
 			}
 		});
+
+		mainActivity = this;
+
+		Bundle bundle = new Bundle(1);
+		//initLoaderだと、最初の一回しか起動しない？
+		getSupportLoaderManager().restartLoader(0,null,mainActivity);
+
+
 
 	}
 
@@ -85,21 +92,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Ar
 	public void onLoadFinished(Loader<ArrayList<RSSContainer>> arg0,ArrayList<RSSContainer> arg1) {
 
 		// TODO 自動生成されたメソッド・スタブ
-		StringBuffer sb = new StringBuffer();
 		if(arg1!=null){
 
-			Iterator<RSSContainer> ite = arg1.iterator();
-			while(ite.hasNext()){
-				RSSContainer rss = ite.next();
-				sb.append(rss.getTitle());
-				sb.append("\n");
-			}
-			text.setText(sb.toString());
-/*
-			Intent nextIntent = new Intent(MainActivity.this,ImageViewActivity.class);
-			nextIntent.putExtra("urllist",arg1);
-			startActivity(nextIntent);
-*/
+			rssAdapter = new RSSAdaputer(mainActivity,0,arg1);
+			listView.setAdapter(rssAdapter);
+
 		}
 	}
 
@@ -108,4 +105,5 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Ar
 		// TODO 自動生成されたメソッド・スタブ
 
 	}
+
 }

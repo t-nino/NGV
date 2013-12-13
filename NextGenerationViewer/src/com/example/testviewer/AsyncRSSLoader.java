@@ -15,6 +15,8 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import android.util.Xml;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 
 
 public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
@@ -64,8 +66,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
 
 			    int eventType;
 			    eventType = xmlPullParser.getEventType();
-			    RSSContainer rss = new RSSContainer();
-
+			    RSSContainer rss = new RSSContainer(ImageLoader.getInstance());
 			    while ((eventType = xmlPullParser.next()) != XmlPullParser.END_DOCUMENT) {
 
 			    	if (eventType == XmlPullParser.START_TAG){
@@ -73,7 +74,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
 			    		Log.d("XmlPullParserSample",name);
 
 			    		if(name.equals("item")){
-			    			rss = new RSSContainer();
+			    			rss = new RSSContainer(ImageLoader.getInstance());
 			    		}else if(name.equals("title")){
 			    			String title = xmlPullParser.nextText();
 			    			Log.d("XmlPullParserSample",title);
