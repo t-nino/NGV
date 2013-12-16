@@ -13,13 +13,13 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
-public class RSSAdaputer extends ArrayAdapter<RSSContainer>{
+public class RSSAdaputer_outer extends ArrayAdapter<ImageContainer>{
 
 	private LayoutInflater layoutInflater_;
     View holder;
     Context context;
 
-	 public RSSAdaputer(Context context, int id, List<RSSContainer> rss) {
+	 public RSSAdaputer_outer(Context context, int id, List<ImageContainer> rss) {
 		 super(context, id, rss);
 		 layoutInflater_ = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		 this.context = context;
@@ -31,7 +31,7 @@ public class RSSAdaputer extends ArrayAdapter<RSSContainer>{
 		 	final ViewHolder holder;
 		 	// 特定の行(position)のデータを得る
 
-			 final RSSContainer rss = (RSSContainer)getItem(position);
+			 final ImageContainer rss = (ImageContainer)getItem(position);
 
 			 // convertViewは使い回しされている可能性があるのでnullの時だけ新しく作る
 			 if (convertView == null) {
@@ -53,13 +53,15 @@ public class RSSAdaputer extends ArrayAdapter<RSSContainer>{
 			 }else{
 				 //ここで、読み込み中のBMPを入れておかないと、使い回しがでてしまうので、対応
 				 //とりあえず初期化?
-				 //holder.icon.setImageDrawable(context.getResources().getDrawable(R.drawable.blank));
+				 holder.icon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_launcher));
+				 holder.icon = (ImageView)convertView.findViewById(R.id.image);
 
-				 rss.getLoader().loadImage(rss.getThumnail(),new SimpleImageLoadingListener(){
+				 rss.getLoader().loadImage(rss.getImage(),new SimpleImageLoadingListener(){
 			        @Override
 			        public void onLoadingComplete(String imageUri,View view, Bitmap loadedImage) {
 			            rss.setBitmap(loadedImage);
-			            holder.icon.setImageBitmap(loadedImage);
+			            //holder.icon.setImageBitmap(loadedImage);
+
 			            rss.setLoaded(true);
 			        }
 				 });
@@ -71,7 +73,7 @@ public class RSSAdaputer extends ArrayAdapter<RSSContainer>{
 	 public String getURL(int position){
 		 //エラー防止のため、数チェック。これでいいか後でテスト
 		 if(position < getCount()){
-			 RSSContainer rss = getItem(position);
+			 ImageContainer rss = getItem(position);
 			 return rss.getLink();
 		 }else{
 			 return null;

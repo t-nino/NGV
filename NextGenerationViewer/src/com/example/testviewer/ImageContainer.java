@@ -6,21 +6,21 @@ import android.graphics.Bitmap;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class RSSContainer{
+public class ImageContainer{
 
 	public String title;
 	public String link;
-	public String thumnail;
+	public String image;
 	public Bitmap bitmap;
 	public boolean loaded;
 	//継承して作りたかったが、シングルトンであるため継承できない。仕方ないので、自分で持つ。
 	public ImageLoader loader;
 
-	public RSSContainer(ImageLoader loader) {
+	public ImageContainer(ImageLoader loader) {
 		// TODO 自動生成されたコンストラクター・スタブ
 		title  = null;
 		link  = null;
-		thumnail = null;
+		image = null;
 		bitmap = null;
 		loaded = false;
 		this.loader = loader;
@@ -40,11 +40,11 @@ public class RSSContainer{
 	public void setLink(String link) {
 		this.link = link;
 	}
-	public String getThumnail() {
-		return thumnail;
+	public String getImage() {
+		return image;
 	}
-	public void setThumnail(String thumnail) {
-		this.thumnail = thumnail;
+	public void setImage(String thumnail) {
+		this.image = thumnail;
 	}
 	public Bitmap getBitmap(){
 		return bitmap;

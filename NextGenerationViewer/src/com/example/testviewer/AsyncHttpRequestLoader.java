@@ -15,9 +15,11 @@ import org.jsoup.select.Elements;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 
-public class AsyncHttpRequestLoader extends AsyncTaskLoader<ArrayList<String>> {
+
+public class AsyncHttpRequestLoader extends AsyncTaskLoader<ArrayList<ImageContainer>> {
 
 	private String urlStr = null;
 
@@ -35,7 +37,7 @@ public class AsyncHttpRequestLoader extends AsyncTaskLoader<ArrayList<String>> {
 
 
 	@Override
-	public ArrayList<String> loadInBackground() {
+	public ArrayList<ImageContainer> loadInBackground() {
 		// TODO 自動生成されたメソッド・スタブ
 		return getImageSrc();
 	}
@@ -53,7 +55,7 @@ public class AsyncHttpRequestLoader extends AsyncTaskLoader<ArrayList<String>> {
 	 * @return
 	 */
 
-    private ArrayList<String> getImageSrc(){
+    private ArrayList<ImageContainer> getImageSrc(){
 
     	if(urlStr==null){
     		return null;
@@ -61,7 +63,7 @@ public class AsyncHttpRequestLoader extends AsyncTaskLoader<ArrayList<String>> {
 
     	Document document;
 
-    	ArrayList<String> retArray = new ArrayList<String>();
+    	ArrayList<ImageContainer> retArray = new ArrayList<ImageContainer>();
 
     	try {
     	    document = Jsoup.connect(urlStr).get();
@@ -80,7 +82,9 @@ public class AsyncHttpRequestLoader extends AsyncTaskLoader<ArrayList<String>> {
     	    		String key = att.getKey();
     	    		if(key.equals("src")){
     	    				System.out.println(att.getValue());
-    	    				retArray.add(att.getValue());
+    	    				ImageContainer cont = new ImageContainer(ImageLoader.getInstance());
+    	    				cont.setImage(att.getValue());
+    	    				retArray.add(cont);
     	    		}
     	    	}
     	    }

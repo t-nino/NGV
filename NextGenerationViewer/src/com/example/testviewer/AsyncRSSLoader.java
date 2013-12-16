@@ -19,7 +19,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 
 
-public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
+public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<ImageContainer>> {
 
 	private String urlStr = null;
 
@@ -37,7 +37,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
 
 
 	@Override
-	public ArrayList<RSSContainer> loadInBackground() {
+	public ArrayList<ImageContainer> loadInBackground() {
 		// TODO 自動生成されたメソッド・スタブ
 		return getNeverRSS();
 	}
@@ -50,10 +50,10 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
 		forceLoad();
 	}
 
-	private ArrayList<RSSContainer> getNeverRSS(){
+	private ArrayList<ImageContainer> getNeverRSS(){
 
 		URL url;
-		ArrayList<RSSContainer> retArray = new ArrayList<RSSContainer>();
+		ArrayList<ImageContainer> retArray = new ArrayList<ImageContainer>();
 
 		try {
 			url = new URL(urlStr);
@@ -66,7 +66,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
 
 			    int eventType;
 			    eventType = xmlPullParser.getEventType();
-			    RSSContainer rss = new RSSContainer(ImageLoader.getInstance());
+			    ImageContainer rss = new ImageContainer(ImageLoader.getInstance());
 			    while ((eventType = xmlPullParser.next()) != XmlPullParser.END_DOCUMENT) {
 
 			    	if (eventType == XmlPullParser.START_TAG){
@@ -74,7 +74,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
 			    		Log.d("XmlPullParserSample",name);
 
 			    		if(name.equals("item")){
-			    			rss = new RSSContainer(ImageLoader.getInstance());
+			    			rss = new ImageContainer(ImageLoader.getInstance());
 			    		}else if(name.equals("title")){
 			    			String title = xmlPullParser.nextText();
 			    			Log.d("XmlPullParserSample",title);
@@ -86,7 +86,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<RSSContainer>> {
 			    		}else if(name.equals("thumbnail")){
 			    			String thumbnail = xmlPullParser.getAttributeValue(null,"url");
 			    			Log.d("XmlPullParserSample",thumbnail);
-			    			rss.setThumnail(thumbnail);
+			    			rss.setImage(thumbnail);
 			    		}
 			    	}else if(eventType == XmlPullParser.END_TAG){
 			    		String name = xmlPullParser.getName();
