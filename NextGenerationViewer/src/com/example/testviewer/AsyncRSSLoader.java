@@ -15,10 +15,12 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import android.util.Xml;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 
-
-
+/**
+ * 指定されたRSSをダウンロードし、特定のタグを抽出・管理する
+ * @author t-nino
+ *
+ */
 public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<ImageContainer>> {
 
 	private String urlStr = null;
@@ -66,7 +68,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<ImageContainer>> {
 
 			    int eventType;
 			    eventType = xmlPullParser.getEventType();
-			    ImageContainer rss = new ImageContainer(ImageLoader.getInstance());
+			    ImageContainer rss = new ImageContainer();
 			    while ((eventType = xmlPullParser.next()) != XmlPullParser.END_DOCUMENT) {
 
 			    	if (eventType == XmlPullParser.START_TAG){
@@ -74,7 +76,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<ImageContainer>> {
 			    		Log.d("XmlPullParserSample",name);
 
 			    		if(name.equals("item")){
-			    			rss = new ImageContainer(ImageLoader.getInstance());
+			    			rss = new ImageContainer();
 			    		}else if(name.equals("title")){
 			    			String title = xmlPullParser.nextText();
 			    			Log.d("XmlPullParserSample",title);
@@ -95,7 +97,7 @@ public class AsyncRSSLoader extends AsyncTaskLoader<ArrayList<ImageContainer>> {
 			    		}
 
 			    	}
-			    	/*
+			    	/*　デバグ用
 			        if(eventType == XmlPullParser.START_DOCUMENT) {
 			            Log.d("XmlPullParserSample", "Start document");
 			        } else if(eventType == XmlPullParser.END_DOCUMENT) {

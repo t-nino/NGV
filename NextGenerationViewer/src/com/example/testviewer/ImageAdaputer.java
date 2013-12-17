@@ -13,6 +13,11 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
+/**
+ *画像リストを非同期でダウンロード・表示するアダプタ
+ * @author t-nino
+ *
+ */
 public class ImageAdaputer extends ArrayAdapter<String>{
 
 	private LayoutInflater layoutInflater_;
@@ -58,16 +63,5 @@ public class ImageAdaputer extends ArrayAdapter<String>{
 			 return convertView;
 		 }
 
-	 public String getURL(int position){
-		 //エラー防止のため、数チェック。これでいいか後でテスト
-		 if(position < getCount()){
-			 String url = getItem(position);
-			 return url;
-		 }else{
-			 return null;
-		 }
-	 }
-	 
-	 
 
 }

@@ -15,10 +15,12 @@ import org.jsoup.select.Elements;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
 
-
-
+/**
+ * 指定されたURLからHTMLを非同期でダウンロードし、ソースを解析、imgタグ内の全URLソースを抽出する
+ * @author t-nino
+ *
+ */
 public class AsyncHttpRequestLoader extends AsyncTaskLoader<ArrayList<ImageContainer>> {
 
 	private String urlStr = null;
@@ -82,7 +84,7 @@ public class AsyncHttpRequestLoader extends AsyncTaskLoader<ArrayList<ImageConta
     	    		String key = att.getKey();
     	    		if(key.equals("src")){
     	    				System.out.println(att.getValue());
-    	    				ImageContainer cont = new ImageContainer(ImageLoader.getInstance());
+    	    				ImageContainer cont = new ImageContainer();
     	    				cont.setImage(att.getValue());
     	    				retArray.add(cont);
     	    		}

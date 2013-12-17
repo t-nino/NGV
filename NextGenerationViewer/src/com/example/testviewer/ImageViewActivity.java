@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,15 +24,23 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
+
+/**
+ * URLに含まれた画像を抽出し、グリッド表示するアクティビティ。とりあえず仮。
+ * リストとグリッド、扱うデータが違うだけで、ほとんどMainActivitｙと同じ
+ * @author t-nino
+ *
+ */
+
 public class ImageViewActivity extends FragmentActivity implements LoaderCallbacks<ArrayList<ImageContainer>>{
 
-	private ImageView imageView;
 	private String url;
 
 	private GridView gridView;
 	private GridAdaputer gridAdapter;
 	ImageLoader loader;
-
+	//表示のために先読みしておく数
+	private final int buffer = 10;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState){
@@ -103,64 +111,91 @@ public class ImageViewActivity extends FragmentActivity implements LoaderCallbac
 
 	//処理を呼び出し先で処理させるためにインナークラスにする
 
-	public class GridAdaputer extends ArrayAdapter<ImageContainer>{
+	public class GridAdaputer extends BaseAdapter{
 
 		private LayoutInflater layoutInflater_;
 	    View holder;
 	    Context context;
+	    ArrayList<ImageContainer> images;
 
 		 public GridAdaputer(Context context, int id, List<ImageContainer> rss) {
-			 super(context, id, rss);
+			 super();
 			 layoutInflater_ = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			 this.context = context;
+			 images = (ArrayList<ImageContainer>) rss;
 		 }
 
 		 @Override
 			 public View getView(int position, View convertView, ViewGroup parent) {
 
-			 	final ViewHolder holder;
-			 	// 特定の行(position)のデータを得る
+		 	 ViewHolder holder;
 
-				 final ImageContainer rss = (ImageContainer)getItem(position);
+			 // convertViewはnullの時だけ新しく作る
+			 if (convertView == null) {
+				 convertView = layoutInflater_.inflate(R.layout.rss, null);
+				 holder = new ViewHolder();
+				 holder.text = (TextView)convertView.findViewById(R.id.text);
+				 holder.icon = (ImageView)convertView.findViewById(R.id.image);
+				 convertView.setTag(holder);
 
-				 // convertViewは使い回しされている可能性があるのでnullの時だけ新しく作る
-				 if (convertView == null) {
-					 convertView = layoutInflater_.inflate(R.layout.rss, null);
-					 holder = new ViewHolder();
-					 holder.text = (TextView)convertView.findViewById(R.id.text);
-					 holder.icon = (ImageView)convertView.findViewById(R.id.image);
+			 }else{
+				 holder = (ViewHolder)convertView.getTag();
+			 }
 
-					 convertView.setTag(holder);
+			 ImageContainer item = (ImageContainer)images.get(position);
 
-				 }else{
-					 holder = (ViewHolder)convertView.getTag();
+
+			 //Viewのテキストに記事のタイトルをセットする
+			 holder.text.setText(item.title);
+
+			 //読み込みが完了していればViewにサムネイル画像をセットする。
+			 if(item.getLoadStatus()==ImageContainer.LOADED){
+				 holder.icon.setImageBitmap(item.getBitmap());
+			 //サムネイルの読み込みが完了していなければ、画像の読み込みを開始させる
+			 }else{
+				 //ここで、読み込み中のBMPを入れておかないと、使い回しがでてしまうので、対応
+				 holder.icon = (ImageView)convertView.findViewById(R.id.image);
+				 //初期画像をセットしておく
+				 holder.icon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_launcher));
+
+				 //バッファ分だけ先読みでロード指示を出しておく
+				 int max = Math.min(getCount(),position + buffer);
+				 int count = position;
+				while(count < max){
+					 final ImageContainer bufItem = (ImageContainer)getItem(count);
+
+					 //ロード完了時のためのリスナーを設定しておく
+					 //繰り返し読み込み指示を出さないため、ロード中・ロード後はなにもしない
+					 if(bufItem.getLoadStatus()==ImageContainer.NOT){
+						 bufItem.getLoader().loadImage(bufItem.getImage(),new SimpleImageLoadingListener(){
+					        /**
+					         * サムネイルのロードが完了した際の処理
+					         */
+							 @Override
+					        public void onLoadingComplete(String imageUri,View view, Bitmap loadedImage) {
+System.out.println("LOAD COMP");
+								//ロードした画像を管理クラスに保存しておく
+					            bufItem.setBitmap(loadedImage);
+					            //読み込みフラグを完了済みにしておく
+					            bufItem.setLoadStatus(ImageContainer.LOADED);
+					            //holder.icon.setImageBitmap(loadedImage);
+					            //アダプタの状態が変わったことを通知
+					            gridAdapter.notifyDataSetChanged();
+					            //リストを再描画（行わなくても更新されているので、不要のようである
+					            gridView.invalidateViews();
+					        }
+						 });
+						 //ロード中にしておく
+						 bufItem.setLoadStatus(ImageContainer.LOADING);
+ System.out.println("LOAD START");
+					 }
+					 //再格納？
+					 images.set(count,bufItem);
+					 count++;
 				 }
+			 }
 
-				 holder.text.setText(rss.title);
-
-				 if(rss.isLoaded()){
-					 holder.icon.setImageBitmap(rss.getBitmap());
-				 }else{
-					 //ここで、読み込み中のBMPを入れておかないと、使い回しがでてしまうので、対応
-					 //とりあえず初期化?
-					 holder.icon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_launcher));
-					 holder.icon = (ImageView)convertView.findViewById(R.id.image);
-
-					 rss.getLoader().loadImage(rss.getImage(),new SimpleImageLoadingListener(){
-				        @Override
-				        public void onLoadingComplete(String imageUri,View view, Bitmap loadedImage) {
-				            rss.setBitmap(loadedImage);
-				            //holder.icon.setImageBitmap(loadedImage);
-				            rss.setLoaded(true);
-
-				            //呼び出し元クラスの状態を変更
-				            gridAdapter.notifyDataSetChanged();
-				            gridView.invalidateViews();
-				        }
-					 });
-				 }
-
-				 return convertView;
+			 return convertView;
 			 }
 
 		 public String getImageURL(int position){
@@ -172,6 +207,24 @@ public class ImageViewActivity extends FragmentActivity implements LoaderCallbac
 				 return null;
 			 }
 		 }
+
+		@Override
+		public int getCount() {
+			// TODO 自動生成されたメソッド・スタブ
+			return images.size();
+		}
+
+		@Override
+		public ImageContainer getItem(int position) {
+			// TODO 自動生成されたメソッド・スタブ
+			return images.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO 自動生成されたメソッド・スタブ
+			return position;
+		}
 	}
 		 static class ViewHolder{
 			 ImageView icon;

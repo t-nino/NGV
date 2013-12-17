@@ -6,6 +6,11 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+/**
+ * 外部モジュールImageLoaderのオプション指定のためのクラス
+ * @author t-nino
+ *
+ */
 public class NGVApplication extends Application{
 
     @Override

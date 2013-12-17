@@ -6,24 +6,42 @@ import android.graphics.Bitmap;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+
+
+/**
+ * 画像コンテンツの情報および画像そのものを管理するための情報コンテナクラス
+ * @author t-nino
+ *
+ */
 public class ImageContainer{
+
+	//画像のダウンロード状況
+
+	//まだ
+	public static int NOT = 0;
+	//ロード中
+	public static int LOADING = 1;
+	//ロード済み
+	public static int LOADED = 2;
 
 	public String title;
 	public String link;
 	public String image;
 	public Bitmap bitmap;
-	public boolean loaded;
-	//継承して作りたかったが、シングルトンであるため継承できない。仕方ないので、自分で持つ。
+	public int loadStatus;
+
+	//外部モジュールでイメージの管理をおこなう
+	//クラスを継承してこのクラスを作りたかったが、シングルトンであるため継承できない。仕方ないので、自分で持つ。
 	public ImageLoader loader;
 
-	public ImageContainer(ImageLoader loader) {
+	public ImageContainer() {
 		// TODO 自動生成されたコンストラクター・スタブ
 		title  = null;
 		link  = null;
 		image = null;
 		bitmap = null;
-		loaded = false;
-		this.loader = loader;
+		loadStatus = this.NOT;
+		loader = ImageLoader.getInstance();
 	}
 
 
@@ -52,11 +70,11 @@ public class ImageContainer{
 	public void setBitmap(Bitmap bitmap){
 		this.bitmap = bitmap;
 	}
-	public boolean isLoaded(){
-		return loaded;
+	public int getLoadStatus(){
+		return loadStatus;
 	}
-	public void setLoaded(boolean loaded){
-		this.loaded = loaded;
+	public void setLoadStatus(int loadStatus){
+		this.loadStatus = loadStatus;
 	}
 	public ImageLoader getLoader(){
 		return loader;
