@@ -1,4 +1,4 @@
-package com.example.testviewer;
+package com.example.ngviewer;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.example.ngviewer.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 

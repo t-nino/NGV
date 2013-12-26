@@ -1,4 +1,4 @@
-package com.example.testviewer;
+package com.example.ngviewer;
 
 
 

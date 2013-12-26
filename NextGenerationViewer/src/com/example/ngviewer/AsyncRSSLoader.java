@@ -1,4 +1,4 @@
-package com.example.testviewer;
+package com.example.ngviewer;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
